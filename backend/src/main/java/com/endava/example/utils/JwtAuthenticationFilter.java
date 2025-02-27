@@ -26,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
 
+    @Autowired
     public JwtAuthenticationFilter(JwtUtils jwtUtils, UserRepository userRepository) {
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;

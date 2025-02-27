@@ -29,7 +29,7 @@ public class SecurityConfig {
     }
 
     // Get allowed origins from .env
-    @Value("${frontend.url}")
+    @Value("${frontend.url:https://gxmovies-frontend.onrender.com}") // Fallback if not set
     private String frontendURL;
 
     @Bean
@@ -37,8 +37,8 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()) // Disable CSRF (JWT is stateless)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/auth/**", "/notifications").permitAll() // Public(No Auth required)
-                        .anyRequest().authenticated()) // Other requests require authentication
+                        .requestMatchers("/users/auth/**", "/api/users/auth/**", "/notifications").permitAll() // Allow OTP API
+                        .anyRequest().authenticated()) // Secure all other APIs
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -56,6 +56,10 @@ public class SecurityConfig {
 
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
+        
+        // Log the frontend URL for debugging
+        System.out.println("Allowed Frontend URL: " + frontendURL);
+        
         corsConfig.setAllowedOrigins(List.of(frontendURL.split(","))); // Split by comma for multiple origins
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
