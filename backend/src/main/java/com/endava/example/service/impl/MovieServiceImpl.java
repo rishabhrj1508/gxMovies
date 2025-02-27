@@ -135,9 +135,6 @@ public class MovieServiceImpl implements MovieService {
 	@Override
 	public List<MovieDTO> getAllMovies() {
 		List<Movie> movies = movieRepository.findAll();
-		if (movies.isEmpty()) {
-			throw new ResourceNotFoundException("No movies found.");
-		}
 		return movies.stream().map(movieMapper::toDto).toList();
 	}
 
@@ -165,9 +162,6 @@ public class MovieServiceImpl implements MovieService {
 	@Override
 	public List<MovieDTO> getAllAvailableMovies() {
 		List<Movie> movies = movieRepository.getAllAvailableMovies();
-		if (movies.isEmpty()) {
-			throw new ResourceNotFoundException("No available movies found.");
-		}
 		return movies.stream().map(movieMapper::toDto).toList();
 	}
 
