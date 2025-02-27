@@ -38,7 +38,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()) // Disable CSRF (JWT is stateless)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/auth/**", "/notifications").permitAll() // Allow login, register, OTP APIs
+                .requestMatchers("/api/users/auth/**", "/notifications").permitAll() // Allow login, register, OTP APIs
                 .anyRequest().authenticated()) // Secure all other APIs
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
