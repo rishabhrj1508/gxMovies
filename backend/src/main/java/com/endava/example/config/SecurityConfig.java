@@ -35,11 +35,14 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // Disable CSRF (JWT is stateless)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/auth/**", "/api/users/auth/**", "/notifications").permitAll() // Allow OTP API
-                        .anyRequest().authenticated()) // Secure all other APIs
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    .authorizeHttpRequests(auth -> auth
+        .antMatchers("/users/auth/**").permitAll()  // Ensure OTP API is allowed
+        .antMatchers("/api/users/auth/**").permitAll()
+        .antMatchers("/notifications").permitAll()
+        .anyRequest().authenticated()) // Secure all other APIs
+    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
