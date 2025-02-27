@@ -1,4 +1,4 @@
-FROM maven:3.8.4-openjdk:17-jdk AS build
+FROM openjdk:17-jdk AS build
 
 WORKDIR /app
 COPY pom.xml .
