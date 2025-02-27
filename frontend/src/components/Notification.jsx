@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const NotificationComponent = () => {
   const connectToSSE = () => {
-    const eventSource = new EventSource("http://localhost:8080/notifications");
+    const eventSource = new EventSource("https://gxmovies.onrender.com/notifications");
 
     // Listen for messages ..positioning it to the top right
     eventSource.onmessage = function (event) {
