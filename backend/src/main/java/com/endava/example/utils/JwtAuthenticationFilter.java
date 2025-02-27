@@ -35,6 +35,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+           String requestPath = request.getServletPath();
+
+    // Skip JWT authentication for public endpoints
+    if (requestPath.startsWith("/users/auth/") || requestPath.equals("/notifications")) {
+        filterChain.doFilter(request, response);
+        return;
+    }
+
         String token = getTokenFromRequest(request);
 
         // Proceed only if the token is present and valid

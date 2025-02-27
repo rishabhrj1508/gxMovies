@@ -17,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.endava.example.utils.JwtAuthenticationFilter;
 
 @Configuration
@@ -29,20 +30,19 @@ public class SecurityConfig {
     }
 
     // Get allowed origins from .env
-    @Value("${frontend.url:https://gxmovies-frontend.onrender.com}") // Fallback if not set
+    @Value("${frontend.url:https://gxmovies.netlify.app}") // Fallback URL if not set
     private String frontendURL;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // Disable CSRF (JWT is stateless)
-    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-    .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/users/auth/**").permitAll()  // Allow OTP API
-        .requestMatchers("/api/users/auth/**").permitAll()
-        .requestMatchers("/notifications").permitAll()
-        .anyRequest().authenticated()) // Secure all other APIs
-    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/users/auth/**").permitAll() // Allow login, register, OTP APIs
+                .requestMatchers("/api/users/auth/**").permitAll()
+                .requestMatchers("/notifications").permitAll()
+                .anyRequest().authenticated()) // Secure all other APIs
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -57,18 +57,20 @@ public class SecurityConfig {
         };
     }
 
-    private CorsConfigurationSource corsConfigurationSource() {
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        
-        // Log the frontend URL for debugging
-        System.out.println("Allowed Frontend URL: " + frontendURL);
-        
-        corsConfig.setAllowedOrigins(List.of(frontendURL.split(","))); // Split by comma for multiple origins
+
+        // Allow frontend domains and wildcard patterns
+        corsConfig.setAllowedOriginPatterns(List.of(frontendURL.split(","))); // Supports multiple origins
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
         corsConfig.setAllowCredentials(true);
         corsConfig.setMaxAge(3600L);
-        return request -> corsConfig;
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+        return source;
     }
 
     @Bean
