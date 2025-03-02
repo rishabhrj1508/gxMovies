@@ -89,7 +89,7 @@ const UserLibrary = () => {
             </span>{" "}
             - ▶️{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-purple-600">
-              {labelConfig.library.titleSubpart}
+              {labelConfig.library.titleSubpart} , Hey Youtube
             </span>
           </h2>
 
