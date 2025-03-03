@@ -65,7 +65,7 @@ const Profile = () => {
       setIsEditing(false);
       Swal.fire({
         icon: "success",
-        title: "Profile Updated Successfully!",
+        title: "Profile Updated Successfully",
         showConfirmButton: false,
         timer: 2000,
       });
