@@ -1,4 +1,4 @@
-
+# Build stage using Temurin JDK 17
 FROM eclipse-temurin:17-jdk-alpine AS build
 
 # Set working directory
@@ -11,23 +11,26 @@ COPY mvnw pom.xml ./
 # Grant execution permission to Maven Wrapper
 RUN chmod +x mvnw
 
-# Download dependencies (this step helps cache dependencies)
+# Download dependencies (cache improvement)
 RUN ./mvnw dependency:go-offline
 
-# Copy the entire project and build the application
+# Copy source and build the app
 COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
-# Create a minimal image for the runtime
-FROM openjdk:17-jdk-slim
 
-# Set working directory for runtime
+# ----------------------
+# Runtime stage
+# ----------------------
+FROM eclipse-temurin:17-jre-alpine
+
+# Set working directory
 WORKDIR /app
 
-# Copy the built JAR file from the build stage
+# Copy built JAR from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port 8080
+# Expose application port
 EXPOSE 8080
 
 # Run the application
